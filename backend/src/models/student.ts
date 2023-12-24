@@ -1,36 +1,9 @@
-export interface pendingAssignment {
-  assignment_id: string;
-  assignment_name: string;
-  description: string;
-  teacher_id: string;
-  due_date: string;
-}
-type completedAssignment = {
-  assignment_id: string;
-  assignment_name: string;
-  description: string;
-  teacher_id: string;
-  due_date: string;
-  marks: number;
-};
-type submittedAssignment = {
-  assignment_id: string;
-  assignment_name: string;
-  description: string;
-  teacher_id: string;
-  due_date: string;
-  submission_date: Date;
-};
-type redoAssignment = {
-  assignment_id: string;
-  assignment_name: string;
-  description: string;
-  teacher_id: string;
-  due_date: string;
-  submission_date: Date;
-  marks: number;
-  remark: string;
-};
+import {
+  studentAssignment,
+  submittedAssignment,
+  correctedAssignment,
+  redoAssignment,
+} from "./assignment";
 
 export interface student {
   name: string;
@@ -39,8 +12,8 @@ export interface student {
   roll_no: string;
   number: number;
   password: string;
-  pending_assignment: pendingAssignment[];
-  completed_assignment: completedAssignment[];
+  pending_assignment: studentAssignment[];
+  completed_assignment: correctedAssignment[];
   submitted_assignment: submittedAssignment[];
   redo_assignment: redoAssignment[];
 }

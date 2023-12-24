@@ -8,7 +8,9 @@ app.use(cookieParser());
 app.use(express.json());
 
 import studentRoutes from "./routes/student.routes";
+import teacherRoutes from "./routes/teacher.routes";
 app.use("/student", studentRoutes);
+app.use("/teacher", teacherRoutes);
 
 connectToDatabase()
   .then(() => {

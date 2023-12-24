@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import { student, pendingAssignment } from "../models/student";
+import { student } from "../models/student";
+import { studentAssignment } from "../models/assignment";
 import { collection } from "../service/database.service";
 import Jwt from "jsonwebtoken";
 import bycrypt from "bcrypt";
@@ -97,7 +98,17 @@ const getPendingAssignments = async (req: Request, res: Response) => {
 
 const updateAssignmnet = async (req: Request, res: Response) => {
   try {
-    const assignment: pendingAssignment = req.body;
+    const _id = new ObjectId();
+    const { assignment_name, description, due_date, teacher_id } =
+      req.body.assignment;
+    const assignment: studentAssignment = {
+      _id,
+      assignment_name,
+      description,
+      assigned_date: new Date(),
+      due_date,
+      teacher_id,
+    };
     const studentInfo = req.cookies["userInfo"];
     if (studentInfo) {
       const decodedToken = await Jwt.verify(
@@ -106,7 +117,11 @@ const updateAssignmnet = async (req: Request, res: Response) => {
       );
       const student = await collection.students?.findOneAndUpdate(
         { _id: new ObjectId(decodedToken.id) },
-        { $addToSet: { pending_assignment: assignment } },
+        {
+          $addToSet: {
+            pending_assignment: { ...assignment },
+          },
+        },
         { returnDocument: "after" }
       );
       console.log(student);
