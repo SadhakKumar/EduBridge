@@ -7,8 +7,8 @@ export type assignment = {
   assigned_date: Date;
   due_date: Date;
   class: string;
-  starting_roll_no: number;
-  ending_roll_no: number;
+  starting_roll_no: string;
+  ending_roll_no: string;
   responses: responses[];
   correted: corrected[];
 };

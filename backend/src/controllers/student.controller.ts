@@ -133,10 +133,85 @@ const updateAssignmnet = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Could not get pending assignments" });
   }
 };
+
+const submitAssignment = async (req: Request, res: Response) => {
+  try {
+    const { assignment_id, data } = req.body;
+    const studentInfo = req.cookies["userInfo"];
+    if (studentInfo) {
+      const decodedToken = await Jwt.verify(
+        studentInfo,
+        process.env.JWT_SECRET
+      );
+      const student = await collection.students?.findOne({
+        _id: new ObjectId(decodedToken.id),
+      });
+      console.log("student : ", student);
+      if (student) {
+        const deletedAssignment = student.pending_assignment.find(
+          (assignment) => {
+            return assignment._id.toString() === assignment_id.toString();
+          }
+        );
+        console.log("deletedAssignment : ", deletedAssignment);
+        const updatedStudent = await collection.students?.findOneAndUpdate(
+          { _id: new ObjectId(decodedToken.id) },
+          {
+            $pull: {
+              pending_assignment: { _id: new ObjectId(assignment_id) },
+            },
+          },
+          { returnDocument: "after" }
+        );
+        const submittedAssignment = await collection.students?.findOneAndUpdate(
+          { _id: new ObjectId(decodedToken.id) },
+          {
+            $addToSet: {
+              submitted_assignment: {
+                ...deletedAssignment,
+                data,
+                submission_date: new Date(),
+              },
+            },
+          },
+          { returnDocument: "after" }
+        );
+        const teacherId = deletedAssignment.teacher_id;
+        const teacher = await collection.teachers?.findOneAndUpdate(
+          {
+            _id: new ObjectId(teacherId),
+            "assignments._id": new ObjectId(assignment_id),
+          },
+          {
+            $addToSet: {
+              "assignments.$.responses": {
+                student_id: decodedToken.id,
+                data: data,
+              },
+            },
+          },
+          { returnDocument: "after" }
+        );
+        return res.status(200).json({
+          message: "Assignment deleted successfully and added to submitted",
+          deletedAssignment,
+        });
+      } else {
+        res.status(404).json({ message: "Assignment not found" });
+      }
+    } else {
+      res.status(404).json({ message: "pls log in" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Could not submit assignment" });
+  }
+};
+
 export {
   signupStudent,
   loginStudent,
   getStudentInfo,
   getPendingAssignments,
   updateAssignmnet,
+  submitAssignment,
 };

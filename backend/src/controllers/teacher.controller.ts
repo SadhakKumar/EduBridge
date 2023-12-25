@@ -94,30 +94,32 @@ const createAssignment = async (req: Request, res: Response) => {
           due_date: newAssignment.due_date,
         };
 
-        const student = await collection.students?.updateMany(
-          {
-            class: newAssignment.class,
-            roll_no: {
-              $gte: String(newAssignment.starting_roll_no),
-              $lte: String(newAssignment.ending_roll_no),
-            },
+        const filter = {
+          class: newAssignment.class,
+          roll_no: {
+            $gte: newAssignment.starting_roll_no,
+            $lte: newAssignment.ending_roll_no,
           },
-          {
-            $addToSet: {
-              pending_assignment: studentAssignment,
-            },
-          }
-        );
+        };
 
-        if (student) {
-          console.log(student);
-          return res
-            .status(201)
-            .json({ message: "Assignment created successfully student" });
-        } else {
-          // If student update fails
-          throw new Error("Could not update students");
+        const studentsToUpdate = await collection.students
+          ?.find(filter)
+          .toArray();
+
+        for (const student of studentsToUpdate) {
+          const updatedStudent = await collection.students?.findOneAndUpdate(
+            { _id: student._id },
+            {
+              $addToSet: {
+                pending_assignment: studentAssignment,
+              },
+            },
+            { returnDocument: "after" }
+          );
+
+          console.log("Updated student:", updatedStudent);
         }
+        res.json({ message: "Assignment created successfully" });
       } else {
         // If teacher update fails
         throw new Error("Could not update teacher");

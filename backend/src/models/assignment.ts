@@ -14,7 +14,8 @@ export type submittedAssignment = {
   assignment_name: string;
   description: string;
   teacher_id: string;
-  due_date: string;
+  assigned_date: Date;
+  due_date: Date;
   data: string;
   submission_date: Date;
 };
