@@ -134,6 +134,113 @@ const createAssignment = async (req: Request, res: Response) => {
   }
 };
 
+const checkAssignment = async (req: Request, res: Response) => {
+  try {
+    const { assignment_id, student_id, marks, review } = req.body;
+    const teacherInfo = await req.cookies["userInfo"];
+    if (teacherInfo) {
+      const decodedToken = await Jwt.verify(
+        teacherInfo,
+        process.env.JWT_SECRET
+      );
+      const teacherBeforeUpdate = await collection.teachers?.findOne({
+        _id: new ObjectId(decodedToken.id),
+        "assignments._id": new ObjectId(assignment_id),
+      });
+      console.log("teacherBeforeUpdate : ", teacherBeforeUpdate);
+      let pulledResponse;
+      let matchedAssignment;
+      if (teacherBeforeUpdate) {
+        matchedAssignment = teacherBeforeUpdate.assignments.find(
+          (assignment) => {
+            return assignment._id.toString() === assignment_id.toString();
+          }
+        );
+        console.log("matchedAssignment : ", matchedAssignment);
+        if (matchedAssignment) {
+          pulledResponse = matchedAssignment.responses.find((response) => {
+            return response.student_id.toString() === student_id.toString();
+          });
+        }
+      }
+      console.log("pulledResponse : ", pulledResponse);
+
+      const teacher = await collection.teachers?.findOneAndUpdate(
+        {
+          _id: new ObjectId(decodedToken.id),
+          "assignments._id": new ObjectId(assignment_id),
+          "assignments.responses.student_id": student_id,
+        },
+        {
+          $pull: {
+            "assignments.$.responses": { student_id: student_id },
+          },
+        },
+        { returnDocument: "after" }
+      );
+      const addToCorrected = await collection.teachers?.findOneAndUpdate(
+        {
+          _id: new ObjectId(decodedToken.id),
+          "assignments._id": new ObjectId(assignment_id),
+        },
+        {
+          $addToSet: {
+            "assignments.$.correted": {
+              student_id: student_id,
+              data: pulledResponse.data,
+              marks: marks,
+              remark: review,
+              correction_date: new Date(),
+            },
+          },
+        },
+        { returnDocument: "after" }
+      );
+      const addToCompletedAssignment =
+        await collection.students?.findOneAndUpdate(
+          {
+            _id: new ObjectId(student_id),
+          },
+          {
+            $addToSet: {
+              completed_assignment: {
+                _id: matchedAssignment._id,
+                assignment_name: matchedAssignment.assignment_name,
+                description: matchedAssignment.description,
+                teacher_id: matchedAssignment.teacher_id,
+                due_date: matchedAssignment.due_date,
+                data: pulledResponse.data,
+                submission_date: pulledResponse.submission_date,
+                correction_date: new Date(),
+                marks: marks,
+                remark: review,
+              },
+            },
+          },
+          { returnDocument: "after" }
+        );
+      const pullFromSubmittedAssignment =
+        await collection.students.findOneAndUpdate(
+          {
+            _id: new ObjectId(student_id),
+          },
+          {
+            $pull: {
+              submitted_assignment: { _id: matchedAssignment._id },
+            },
+          },
+          { returnDocument: "after" }
+        );
+      console.log("teacher : ", teacher);
+      res.json({ message: "Assignment checked successfully" });
+    } else {
+      res.status(401).json({ message: "Unauthorized access" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Could not check assignment" });
+  }
+};
+
 export default createAssignment;
 
-export { signupTeacher, loginTeacher, createAssignment };
+export { signupTeacher, loginTeacher, createAssignment, checkAssignment };

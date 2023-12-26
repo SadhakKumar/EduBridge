@@ -187,6 +187,7 @@ const submitAssignment = async (req: Request, res: Response) => {
               "assignments.$.responses": {
                 student_id: decodedToken.id,
                 data: data,
+                submission_date: new Date(),
               },
             },
           },

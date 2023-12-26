@@ -28,6 +28,7 @@ export type correctedAssignment = {
   due_date: string;
   data: string;
   submission_date: Date;
+  correction_date: Date;
   marks: number;
   remark: string;
 };

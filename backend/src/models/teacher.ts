@@ -16,12 +16,14 @@ export type assignment = {
 export type responses = {
   student_id: ObjectId;
   data: string;
+  submitted_date: Date;
 };
 export type corrected = {
   student_id: ObjectId;
   data: string;
   marks: number;
   remark: string;
+  correction_date: Date;
 };
 
 export interface teacher {
