@@ -4,6 +4,9 @@ import {
   loginStudent,
   getStudentInfo,
   getPendingAssignments,
+  getCompletedAssignments,
+  getSubmittedAssignments,
+  getRedoAssignments,
   updateAssignmnet,
   submitAssignment,
 } from "../controllers/student.controller";
@@ -14,6 +17,9 @@ router.post("/signupstudent", signupStudent);
 router.post("/loginstudent", loginStudent);
 router.get("/getstudentinfo", getStudentInfo);
 router.get("/getpendingassignments", getPendingAssignments);
+router.get("/getcompletedassignments", getCompletedAssignments);
+router.get("/getsubmittedassignments", getSubmittedAssignments);
+router.get("/getredoassignments", getRedoAssignments);
 router.post("/updateassignment", updateAssignmnet);
 router.post("/submitassignment", submitAssignment);
 

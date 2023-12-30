@@ -1,0 +1,41 @@
+.welcome-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f2f2f2;
+  
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+  
+    .buttons-container {
+      margin-top: 20px;
+  
+      button {
+        padding: 10px 20px;
+        margin: 0 10px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        background-color: #3498db;
+        color: #fff;
+  
+        &:hover {
+          background-color: #2980b9;
+        }
+      }
+  
+      .login-btn {
+        background-color: #3498db;
+      }
+  
+      .signup-btn {
+        background-color: #27ae60;
+      }
+    }
+  }
+  

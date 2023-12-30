@@ -1,0 +1,41 @@
+.dashboard-container {
+  padding: 20px;
+}
+
+.secondary-nav {
+  display: flex;
+  justify-content: space-between;
+
+  .nav-item {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    background-color: #3498db;
+    color: #fff;
+    position: relative;
+
+    &:hover {
+      background-color: #2980b9;
+    }
+
+    &.active {
+      background-color: #27ae60;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+      width: 1px;
+      background-color: #fff;
+    }
+  }
+
+  // Remove the line after the last nav item
+  .nav-item:last-child::after {
+    content: none;
+  }
+}

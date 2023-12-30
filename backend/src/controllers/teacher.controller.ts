@@ -49,8 +49,8 @@ const loginTeacher = async (req: Request, res: Response) => {
           process.env.JWT_SECRET,
           { expiresIn: "1h" }
         );
-        res.cookie("userInfo", token, { httpOnly: true });
-        res.status(200).json({ message: "Logged in successfully" });
+        res.cookie("userInfo", token);
+        res.status(200).json({ token });
       } else {
         res.status(401).json({ message: "Invalid credentials" });
       }
