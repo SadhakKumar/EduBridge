@@ -277,82 +277,82 @@ const submitAssignment = async (req: Request, res: Response) => {
   }
 };
 
-// const submitRedoAssignment = async (req: Request, res: Response) => {
-//   try {
-//     const { assignment_id, data } = req.body;
-//     const studentInfo = req.cookies["userInfo"];
-//     if (studentInfo) {
-//       const decodedToken = await Jwt.verify(
-//         studentInfo,
-//         process.env.JWT_SECRET
-//       );
-//       const student = await collection.students?.findOne({
-//         _id: new ObjectId(decodedToken.id),
-//       });
-//       console.log("student : ", student);
-//       if (student) {
-//         const deletedAssignment = student.redo_assignment.find((assignment) => {
-//           return assignment._id.toString() === assignment_id.toString();
-//         });
-//         console.log("deletedAssignment : ", deletedAssignment);
-//         const updatedStudent = await collection.students?.findOneAndUpdate(
-//           { _id: new ObjectId(decodedToken.id) },
-//           {
-//             $pull: {
-//               redo_assignment: { _id: new ObjectId(assignment_id) },
-//             },
-//           },
-//           { returnDocument: "after" }
-//         );
-//         const submittedAssignment = await collection.students?.findOneAndUpdate(
-//           { _id: new ObjectId(decodedToken.id) },
-//           {
-//             $addToSet: {
-//               submitted_assignment: {
-//                 _id: new ObjectId(assignment_id),
-//                 assignment_name: deletedAssignment.assignment_name,
-//                 description: deletedAssignment.description,
-//                 teacher_id: deletedAssignment.teacher_id,
-//                 assigned_date: deletedAssignment.assigned_date,
-//                 due_date: deletedAssignment.due_date,
-//                 data,
-//                 submission_date: new Date(),
-//               },
-//             },
-//           },
-//           { returnDocument: "after" }
-//         );
-//         const teacherId = deletedAssignment.teacher_id;
-//         const teacher = await collection.teachers?.findOneAndUpdate(
-//           {
-//             _id: new ObjectId(teacherId),
-//             "assignments._id": new ObjectId(assignment_id),
-//           },
-//           {
-//             $addToSet: {
-//               "assignments.$.responses": {
-//                 student_id: decodedToken.id,
-//                 data: data,
-//                 submission_date: new Date(),
-//               },
-//             },
-//           },
-//           { returnDocument: "after" }
-//         );
-//         return res.status(200).json({
-//           message: "Assignment deleted successfully and added to submitted",
-//           deletedAssignment,
-//         });
-//       } else {
-//         res.status(404).json({ message: "Assignment not found" });
-//       }
-//     } else {
-//       res.status(404).json({ message: "pls log in" });
-//     }
-//   } catch (error) {
-//     res.status(500).json({ message: "Could not submit assignment" });
-//   }
-// }
+const submitRedoAssignment = async (req: Request, res: Response) => {
+  try {
+    const { assignment_id, data } = req.body;
+    const studentInfo = req.cookies["userInfo"];
+    if (studentInfo) {
+      const decodedToken = await Jwt.verify(
+        studentInfo,
+        process.env.JWT_SECRET
+      );
+      const student = await collection.students?.findOne({
+        _id: new ObjectId(decodedToken.id),
+      });
+      console.log("student : ", student);
+      if (student) {
+        const deletedAssignment = student.redo_assignment.find((assignment) => {
+          return assignment._id.toString() === assignment_id.toString();
+        });
+        console.log("deletedAssignment : ", deletedAssignment);
+        const updatedStudent = await collection.students?.findOneAndUpdate(
+          { _id: new ObjectId(decodedToken.id) },
+          {
+            $pull: {
+              redo_assignment: { _id: new ObjectId(assignment_id) },
+            },
+          },
+          { returnDocument: "after" }
+        );
+        const submittedAssignment = await collection.students?.findOneAndUpdate(
+          { _id: new ObjectId(decodedToken.id) },
+          {
+            $addToSet: {
+              submitted_assignment: {
+                _id: new ObjectId(assignment_id),
+                assignment_name: deletedAssignment.assignment_name,
+                description: deletedAssignment.description,
+                teacher_id: deletedAssignment.teacher_id,
+                assigned_date: deletedAssignment.assigned_date,
+                due_date: deletedAssignment.due_date,
+                data,
+                submission_date: new Date(),
+              },
+            },
+          },
+          { returnDocument: "after" }
+        );
+        const teacherId = deletedAssignment.teacher_id;
+        const teacher = await collection.teachers?.findOneAndUpdate(
+          {
+            _id: new ObjectId(teacherId),
+            "assignments._id": new ObjectId(assignment_id),
+          },
+          {
+            $addToSet: {
+              "assignments.$.responses": {
+                student_id: decodedToken.id,
+                data: data,
+                submission_date: new Date(),
+              },
+            },
+          },
+          { returnDocument: "after" }
+        );
+        return res.status(200).json({
+          message: "Assignment deleted successfully and added to submitted",
+          deletedAssignment,
+        });
+      } else {
+        res.status(404).json({ message: "Assignment not found" });
+      }
+    } else {
+      res.status(404).json({ message: "pls log in" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Could not submit assignment" });
+  }
+};
 
 export {
   signupStudent,
@@ -364,4 +364,5 @@ export {
   getRedoAssignments,
   updateAssignmnet,
   submitAssignment,
+  submitRedoAssignment,
 };

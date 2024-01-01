@@ -5,6 +5,7 @@ import PendingAssignment from '../AssignmentCard/PendingAssignment';
 import SubmittedAssignment from '../AssignmentCard/SubmittedAssignment';
 import RedoAssignment from '../AssignmentCard/RedoAssignment';
 import CheckedAssignments from '../AssignmentCard/CheckedAssignments';
+import NoResponse from '../NoResponses/NoResponse';
 
 const AssignmentList = () => {
     const menu = useSelector(getNavbar);
@@ -26,29 +27,41 @@ const AssignmentList = () => {
     let renderElements = "";
 
     renderElements = menu === 'pending' ? (
-        pending.map((item, index) => {
-            return (
-                <PendingAssignment key={index} item={item}/>
-            )
-        })
+        pending.length === 0 ? (
+            <NoResponse title = {"No pending assignments"}/>
+        ) : (
+            pending.slice().reverse().map((item, index) => {
+                return (
+                    <PendingAssignment key={index} item={item}/>
+                )
+        }))
     ) : menu === 'submitted' ? (
-        submitted.map((item, index) => {
+        submitted.length === 0 ? (
+            <NoResponse title = {"No submitted assignments"}/>
+        ) : (
+        submitted.slice().reverse().map((item, index) => {
             return (
                 <SubmittedAssignment key={index} item={item}/>
             )
-        })
+        }))
     ) : menu === 'redo' ? (
-        redo.map((item, index) => {
+        redo.length === 0 ? (
+            <NoResponse title = {"No redo assignments"}/>
+        ) : (
+        redo.slice().reverse().map((item, index) => {
             return (
                 <RedoAssignment key={index} item={item}/>
             )
-        })
+        }))
     ):(
-        checked.map((item, index) => {
+        checked.length === 0 ? (
+            <NoResponse title = {"No checked assignments"}/>
+        ) : (
+        checked.slice().reverse().map((item, index) => {
             return (
                 <CheckedAssignments key={index} item={item}/>
             )
-        })
+        }))
     )
   return (
     <div>

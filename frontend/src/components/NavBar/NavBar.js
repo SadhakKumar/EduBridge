@@ -1,8 +1,9 @@
 import { useState } from 'react';
+import {useNavigate} from 'react-router-dom';
 import './navbar.scss';
 
 const NavBar = () => {
-
+    const navigate = useNavigate();
     const [isDropdownOpen, setDropdownOpen] = useState(false);
 
     const toggleDropdown = () => {
@@ -10,9 +11,11 @@ const NavBar = () => {
     };
 
     const handleLogout = () => {
-        // Add your logout logic here
-        // For example, redirect to the login page or clear user session
-        console.log('Logging out...');
+      const expirationDate = new Date();
+      expirationDate.setHours(expirationDate.getHours() - 1); 
+      document.cookie = `userInfo=; expires=${expirationDate.toUTCString()}; path=/;`;
+      navigate('/login');
+      console.log('Logging out...');
     };
     return (
         <div className="navbar-container">

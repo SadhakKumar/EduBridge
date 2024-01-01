@@ -7,7 +7,7 @@ const CheckedAssignments = (props) => {
           <h2>{item.assignment_name}</h2>
           <div className="assignment-details">
             <p className="description">{item.description}</p>
-            <p>Teacher ID: {item.assignment_name}</p>
+            <p>Teacher ID: {item.teacher_id}</p>
             <p>Due Date: {item.due_date}</p>
             <p>Submission Date: {item.submission_date}</p>
             <p>Correction Date: {item.correction_date}</p>

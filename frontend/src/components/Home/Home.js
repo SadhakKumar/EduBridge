@@ -8,7 +8,7 @@ const Home = () => {
       <h1>Welcome to EduBridge</h1>
       <div className="buttons-container">
         <Link to = '/login'><button className="login-btn">Login</button></Link>
-        <Link to = '/login'><button className="login-btn">Sign Up</button></Link>
+        <Link to = '/signup'><button className="login-btn">Sign Up</button></Link>
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ import {
   getRedoAssignments,
   updateAssignmnet,
   submitAssignment,
+  submitRedoAssignment,
 } from "../controllers/student.controller";
 
 const router = Router();
@@ -22,5 +23,6 @@ router.get("/getsubmittedassignments", getSubmittedAssignments);
 router.get("/getredoassignments", getRedoAssignments);
 router.post("/updateassignment", updateAssignmnet);
 router.post("/submitassignment", submitAssignment);
+router.post("/submitredoassignment", submitRedoAssignment);
 
 export default router;

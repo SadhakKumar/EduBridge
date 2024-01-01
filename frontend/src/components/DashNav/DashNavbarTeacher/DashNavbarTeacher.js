@@ -1,43 +1,20 @@
-import { useState } from 'react';
-import './dashnavbarteacher.scss'
+import './dashnavbarteacher.scss';
+import { useNavigate } from 'react-router-dom';
 
 const DashNavbarTeacher = () => {
-    const [activeNavItem, setActiveNavItem] = useState('pending');
-
-    const handleNavItemClick = (item) => {
-        setActiveNavItem(item);
+    const navigate = useNavigate();
+    
+    const onCreateNewAssignmentClick = () => {
+        console.log("Create New Assignment Clicked" );
+        navigate('/dashboard/createassignment');
     };
     return (
-        <div className="dashboard-container">
-          <div className="secondary-nav">
-            <div
-              className={`nav-item ${activeNavItem === 'pending' ? 'active' : ''}`}
-              onClick={() => handleNavItemClick('pending')}
-            >
-              Pending Assignment
-            </div>
-            <div
-              className={`nav-item ${activeNavItem === 'submitted' ? 'active' : ''}`}
-              onClick={() => handleNavItemClick('submitted')}
-            >
-              Submitted Assignment
-            </div>
-            <div
-              className={`nav-item ${activeNavItem === 'redo' ? 'active' : ''}`}
-              onClick={() => handleNavItemClick('redo')}
-            >
-              Redo Assignment
-            </div>
-            <div
-              className={`nav-item ${activeNavItem === 'checked' ? 'active' : ''}`}
-              onClick={() => handleNavItemClick('checked')}
-            >
-              Checked Assignment
-            </div>
-          </div>
-          {/* Add your dashboard content here */}
-        </div>
-      );
+      <div className="teacher-dashboard-navbar">
+        <h2>Your Assignments</h2>
+        <button onClick={onCreateNewAssignmentClick}>Create New Assignment</button>
+      </div>
+    );
+  
 }
 
 export default DashNavbarTeacher

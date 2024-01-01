@@ -1,6 +1,7 @@
 import {useState} from 'react'
 import './redoassignment.scss'
 import { useDispatch } from 'react-redux';
+import axios from '../../api/axios';
 import { fetchAsyncRedo,fetchAsyncSubmitted } from '../../features/student/studentSlice';
 
 const RedoAssignment = (props) => {
@@ -15,9 +16,21 @@ const RedoAssignment = (props) => {
     };
 
     const handleSubmissionSubmit = () => {
-        // Handle the submission, e.g., send it to the server
-        console.log('Assignment submitted:', submission);
-        // You may want to dispatch an action to update the state with the submission
+    
+      const response = axios.post('/student/submitredoassignment',
+      JSON.stringify({assignment_id : item._id,data : submission}),
+      {
+        headers: {'content-type': 'application/json'},
+        withCredentials: true
+      });
+      if(response){
+        console.log(response);
+        alert('Assignment submitted successfully');
+        dispatch(fetchAsyncRedo());
+        dispatch(fetchAsyncSubmitted());
+      }
+      console.log('Assignment submitted:', submission);
+      
     };
     return (
         <div className="assignment-container">

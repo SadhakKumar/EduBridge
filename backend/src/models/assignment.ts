@@ -38,7 +38,8 @@ export type redoAssignment = {
   assignment_name: string;
   description: string;
   teacher_id: string;
-  due_date: string;
+  assigned_date: Date;
+  due_date: Date;
   submission_date: Date;
   remark: string;
 };

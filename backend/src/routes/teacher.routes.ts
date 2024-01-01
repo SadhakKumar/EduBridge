@@ -7,6 +7,7 @@ import {
   checkAssignmentForReDo,
   getAllAssignment,
   getAllResponses,
+  getAllCorrected,
 } from "../controllers/teacher.controller";
 
 const router = Router();
@@ -17,6 +18,7 @@ router.post("/createAssignment", createAssignment);
 router.post("/checkAssignment", checkAssignment);
 router.post("/checkAssignmentForReDo", checkAssignmentForReDo);
 router.get("/getAllAssignment", getAllAssignment);
-router.get("/getAllResponses", getAllResponses);
+router.post("/getAllResponses", getAllResponses);
+router.post("/getAllCorrected", getAllCorrected);
 
 export default router;

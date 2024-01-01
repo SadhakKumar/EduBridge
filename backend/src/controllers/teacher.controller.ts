@@ -207,7 +207,7 @@ const checkAssignment = async (req: Request, res: Response) => {
                 _id: matchedAssignment._id,
                 assignment_name: matchedAssignment.assignment_name,
                 description: matchedAssignment.description,
-                teacher_id: matchedAssignment.teacher_id,
+                teacher_id: decodedToken.id,
                 due_date: matchedAssignment.due_date,
                 data: pulledResponse.data,
                 submission_date: pulledResponse.submission_date,
@@ -296,7 +296,8 @@ const checkAssignmentForReDo = async (req: Request, res: Response) => {
               _id: matchedAssignment._id,
               assignment_name: matchedAssignment.assignment_name,
               description: matchedAssignment.description,
-              teacher_id: matchedAssignment.teacher_id,
+              teacher_id: decodedToken.id,
+              assigned_date: matchedAssignment.assigned_date,
               due_date: matchedAssignment.due_date,
               submission_date: pulledResponse.submission_date,
               remark: review,
@@ -379,6 +380,35 @@ const getAllResponses = async (req: Request, res: Response) => {
   }
 };
 
+const getAllCorrected = async (req: Request, res: Response) => {
+  try {
+    const { assignment_id } = req.body;
+    const teacherInfo = await req.cookies["userInfo"];
+    if (teacherInfo) {
+      const decodedToken = await Jwt.verify(
+        teacherInfo,
+        process.env.JWT_SECRET
+      );
+      const teacher = await collection.teachers?.findOne({
+        _id: new ObjectId(decodedToken.id),
+      });
+      if (teacher) {
+        const assignment = teacher.assignments.find((assignment) => {
+          return assignment._id.toString() === assignment_id.toString();
+        });
+        const corrections = assignment.correted;
+        res.status(200).json({ corrections });
+      } else {
+        res.status(401).json({ message: "could not get assignments" });
+      }
+    } else {
+      res.status(401).json({ message: "Unauthorized access" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Could not get all corrections" });
+  }
+};
+
 export {
   signupTeacher,
   loginTeacher,
@@ -387,4 +417,5 @@ export {
   checkAssignmentForReDo,
   getAllAssignment,
   getAllResponses,
+  getAllCorrected,
 };
