@@ -1,42 +1,62 @@
-.login-section{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #eee9e9;
-    flex-direction: column;
-    
-    form{
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        width: 30%;
-        padding: 20px;
-
-        label{
-            margin: 2px 0;
-            padding: 1px;
-        }
-        
-        input{
-            margin: 10px 0;
-            padding: 10px;
-            border: 1px solid #000000;
-            border-radius: 5px;
-        }
-        select{
-            margin: 10px 0;
-            padding: 10px;
-            border: 1px solid #000000;
-            border-radius: 5px;
-        }
-        button{
-            margin: 10px 0;
-            padding: 10px;
-            border: 1px solid #000000;
-            border-radius: 5px;
-            background-color: #fff;
-            cursor: pointer;
-        }
+.signup-container {
+    width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  
+    h2 {
+      text-align: center;
+      color: #3498db;
+      margin-bottom: 20px;
     }
-}
+  
+    .errmsg {
+      color: #e74c3c;
+      margin-top: 10px;
+    }
+  
+    .signup-form {
+      display: flex;
+      flex-direction: column;
+  
+      label {
+        margin-top: 10px;
+        font-size: 1rem;
+        color: #333;
+      }
+  
+      input {
+        margin-bottom: 15px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+  
+      select {
+        margin-bottom: 15px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+  
+      button {
+        padding: 10px;
+        border: none;
+        background-color: #3498db;
+        color: #fff;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+  
+        &:hover {
+          background-color: #2980b9;
+        }
+      }
+    }
+  }
+  

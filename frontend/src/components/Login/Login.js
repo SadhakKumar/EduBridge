@@ -81,45 +81,47 @@ const Login = () => {
         setRole(e.target.value);
     }
 
-  return (
-    <>
-        <div className="login-section">
-            <p ref={errRef} className={err ? "errmsg" : "offscreen"} aria-live="assertive">{err}</p>
-            <h1>Sign In</h1>
-            <form onSubmit={handleSubmit}>
-                
-                <label htmlFor="email">Email</label>
-                <input 
-                    type="text" 
-                    id="email" 
-                    ref={userRef} 
-                    autoComplete="off" 
-                    onChange={(e) => setEmail(e.target.value)}
-                    value={email}
-                    required
-                />
-                <label htmlFor="password">Password</label>
-                <input 
-                    type="password" 
-                    id="password" 
-                    onChange={(e) => setPass(e.target.value)}
-                    value={pass}
-                    required
-                />
-                <label htmlFor="role">Role</label>
-                <select 
-                    onChange={handleChange}
-                    value={role}
-                    required
-                >
-                    <option value="teacher">Teacher</option>
-                    <option value="student">Student</option>
-                </select>
-                <button>Sign In</button>
-            </form>
+    return (
+        <div className="signup-container">
+          <h2>Sign In</h2>
+          <p ref={errRef} className={err ? "errmsg" : "offscreen"} aria-live="assertive">{err}</p>
+          <form onSubmit={handleSubmit} className="signup-form">
+    
+            <label htmlFor="email">Email</label>
+            <input
+              type="text"
+              id="email"
+              ref={userRef}
+              autoComplete="off"
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
+              required
+            />
+    
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              onChange={(e) => setPass(e.target.value)}
+              value={pass}
+              required
+            />
+    
+            <label htmlFor="role">Role</label>
+            <select
+              onChange={handleChange}
+              value={role}
+              required
+            >
+              <option value="teacher">Teacher</option>
+              <option value="student">Student</option>
+            </select>
+    
+            <button type="submit">Sign In</button>
+          </form>
         </div>
-    </>
-  );
+      );
+    
 }
 
 export default Login;
