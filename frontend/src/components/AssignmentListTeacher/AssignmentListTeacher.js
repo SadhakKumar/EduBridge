@@ -11,7 +11,6 @@ const AssignmentListTeacher = () => {
     useEffect(() => {
         dispatch(fetchAssignments());
     },[dispatch])
-    console.log(assignment);
   return (
     <>
         {assignment.length === 0 ? <NoResponse title = 'No Assignments Yet'/> :

@@ -13,7 +13,11 @@ const initialState = {
 const userSlice = createSlice({
     name: 'user',
     initialState,
-    reducers: {},
+    reducers: {
+      logout: (state) => {
+        state.role = '';
+      },
+    },
     extraReducers: (builder) => {
       builder.addCase(fetchAsyncRole.fulfilled, (state, { payload }) => {
         state.role = payload;
@@ -21,5 +25,6 @@ const userSlice = createSlice({
     },
   });
 
+export const { logout } = userSlice.actions;
 export const getRole = (state) => state.user.role;
 export default userSlice.reducer;

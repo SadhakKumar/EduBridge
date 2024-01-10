@@ -48,6 +48,12 @@ const teacherSlice = createSlice({
     reducers: {
         setNavbar: (state, action) => {
             state.navbar = action.payload;
+        },
+        clearTeacher: (state) => {
+            state.navbar = 'response';
+            state.assignments = [];
+            state.response = [];
+            state.corrected = [];
         }
     },
     extraReducers: (builder) => {
@@ -63,7 +69,7 @@ const teacherSlice = createSlice({
     }
 })
 
-export const { setNavbar } = teacherSlice.actions;
+export const { setNavbar, clearTeacher } = teacherSlice.actions;
 export const getNavbar = (state) => state.teacher.navbar;
 export const getAssignment = (state) => state.teacher.assignments;
 export const getResponse = (state) => state.teacher.response;

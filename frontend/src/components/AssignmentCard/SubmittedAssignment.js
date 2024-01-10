@@ -1,4 +1,5 @@
 import React from 'react'
+import DisplayPDF from '../DisplayPdf/DisplayPdf';
 import './submittedassignment.scss'
 
 const SubmittedAssignment = (props) => {
@@ -12,6 +13,11 @@ const SubmittedAssignment = (props) => {
             <p>Assigned Date: {item.assigned_date}</p>
             <p>Due Date: {item.due_date}</p>
             <p>Your Submission: {item.data}</p>
+            {item.file_id 
+            ? 
+            <DisplayPDF fileId={item.file_id} />
+            : <p>No file submitted</p>
+            } 
           </div>
           <div className="submission-details">
             <p>Submission Data: {item.submission_date}</p>

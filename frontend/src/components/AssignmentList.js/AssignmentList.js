@@ -12,7 +12,6 @@ const AssignmentList = () => {
     const dispatch = useDispatch();
 
     const pending = useSelector(getPending);
-    console.log(pending);
     const checked = useSelector(getChecked);
     const redo = useSelector(getRedo);
     const submitted = useSelector(getSubmitted);

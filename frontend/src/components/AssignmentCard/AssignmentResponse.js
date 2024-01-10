@@ -4,6 +4,7 @@ import { fetchAssignmentResponse , fetchCorrectedAssignments} from '../../featur
 import './assignmentresponse.scss';
 import axios from '../../api/axios';
 import { useParams } from 'react-router-dom';
+import DisplayPDF from '../DisplayPdf/DisplayPdf';
 
 const AssignmentResponse = (props) => {
   const { item } = props;
@@ -66,6 +67,9 @@ const AssignmentResponse = (props) => {
       <div className="response-details">
         <p>Student ID: {item.student_id}</p>
         <p>Data: {item.data}</p>
+        {item.file_id ? (
+          <DisplayPDF fileId={item.file_id} />
+        ) : <p>No file submitted</p>}
         <p>Submitted Date: {item.submission_date}</p>
       </div>
       <div className="grade-input">

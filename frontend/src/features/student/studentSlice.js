@@ -35,6 +35,13 @@ const studentSlice = createSlice({
     reducers: {
         setNavbar: (state, {payload}) => {
             state.navbar = payload;
+        },
+        clearStudent: (state) => {
+            state.navbar = 'pending';
+            state.pending = [];
+            state.checked = [];
+            state.submitted = [];
+            state.redo = [];
         }
     },
     extraReducers: (builder) => {
@@ -53,7 +60,7 @@ const studentSlice = createSlice({
     }
 })
 
-export const {setNavbar} = studentSlice.actions;
+export const {setNavbar,clearStudent} = studentSlice.actions;
 export const getNavbar = (state) => state.student.navbar;
 export const getPending = (state) => state.student.pending; 
 export const getChecked = (state) => state.student.checked;

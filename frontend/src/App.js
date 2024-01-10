@@ -4,6 +4,7 @@ import Home from './components/Home/Home';
 import {Routes , Route} from 'react-router-dom';
 import RequireAuth from './components/RequireAuth/RequireAuth';
 import RequireNoAuth from './components/RequireAuth/RequireNoAuth';
+import RequireTeacherAuth from './components/RequireAuth/RequireTeacherAuth';
 import DashLayout from './components/DashLayout/DashLayout';
 import Dashboard from './components/Dashboard/Dashboard';
 import CreateAssignment from './components/CreateAssignment/CreateAssignment';
@@ -26,8 +27,10 @@ function App() {
       <Route element = {<RequireAuth/>}>
         <Route path='dashboard' element={<DashLayout/>}>
           <Route path = '' element={<Dashboard/>}/>
-          <Route path='createassignment' element={<CreateAssignment/>}/>
-          <Route path=':id' element={<AssignmentDetail/>}/> 
+          <Route element = {<RequireTeacherAuth/>}>
+            <Route path='createassignment' element={<CreateAssignment/>}/>
+            <Route path=':id' element={<AssignmentDetail/>}/> 
+          </Route>
         </Route>
       </Route>
     </Route>

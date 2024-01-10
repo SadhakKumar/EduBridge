@@ -1,5 +1,6 @@
 import React from 'react'
 import './checkedassignment.scss'
+import DisplayPDF from '../DisplayPdf/DisplayPdf';
 const CheckedAssignments = (props) => {
     const {item} = props;
     return (
@@ -14,6 +15,9 @@ const CheckedAssignments = (props) => {
           </div>
           <div className="correction-details">
             <p>Data: {item.data}</p>
+            {item.file_id ? (
+              <DisplayPDF fileId={item.file_id} /> )
+            : <p>No file uploaded</p> }
             <p>Marks: {item.marks}</p>
             <p>Remark: {item.remark}</p>
           </div>

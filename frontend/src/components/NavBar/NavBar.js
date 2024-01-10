@@ -1,8 +1,13 @@
 import { useState } from 'react';
 import {useNavigate} from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../features/user/userSlice';
+import { clearStudent } from '../../features/student/studentSlice';
+import { clearTeacher } from '../../features/teacher/teacherSlice';
 import './navbar.scss';
 
 const NavBar = () => {
+  const dispatch = useDispatch();
     const navigate = useNavigate();
     const [isDropdownOpen, setDropdownOpen] = useState(false);
 
@@ -14,6 +19,9 @@ const NavBar = () => {
       const expirationDate = new Date();
       expirationDate.setHours(expirationDate.getHours() - 1); 
       document.cookie = `userInfo=; expires=${expirationDate.toUTCString()}; path=/;`;
+      dispatch(logout());
+      dispatch(clearStudent());
+      dispatch(clearTeacher());
       navigate('/login');
       console.log('Logging out...');
     };
