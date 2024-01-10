@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
+import { ObjectId, GridFSBucketWriteStream } from "mongodb";
 import { student } from "../models/student";
 import { studentAssignment } from "../models/assignment";
-import { collection } from "../service/database.service";
+import { collection, gridfsBucket } from "../service/database.service";
 import { Readable } from "stream";
 import Jwt from "jsonwebtoken";
 import bycrypt from "bcrypt";
-import { ObjectId } from "mongodb";
 
 // ==== Function starts here ==== //
 
@@ -207,7 +207,10 @@ const updateAssignmnet = async (req: Request, res: Response) => {
 const submitAssignment = async (req: Request, res: Response) => {
   try {
     const { assignment_id, data } = req.body;
+    console.log("assignment_id : ", assignment_id);
+    console.log("file", req.files.file);
     const studentInfo = req.cookies["userInfo"];
+    console.log("studentInfo : ", studentInfo);
     if (studentInfo) {
       const decodedToken = await Jwt.verify(
         studentInfo,
@@ -216,64 +219,110 @@ const submitAssignment = async (req: Request, res: Response) => {
       const student = await collection.students?.findOne({
         _id: new ObjectId(decodedToken.id),
       });
-      console.log("student : ", student);
       if (student) {
         const deletedAssignment = student.pending_assignment.find(
           (assignment) => {
             return assignment._id.toString() === assignment_id.toString();
           }
         );
-        console.log("deletedAssignment : ", deletedAssignment);
-        const updatedStudent = await collection.students?.findOneAndUpdate(
-          { _id: new ObjectId(decodedToken.id) },
-          {
-            $pull: {
-              pending_assignment: { _id: new ObjectId(assignment_id) },
-            },
-          },
-          { returnDocument: "after" }
-        );
-        const submittedAssignment = await collection.students?.findOneAndUpdate(
-          { _id: new ObjectId(decodedToken.id) },
-          {
-            $addToSet: {
-              submitted_assignment: {
-                ...deletedAssignment,
-                data,
-                submission_date: new Date(),
+
+        // Check if a file was uploaded
+        if (!req.files || !req.files.file) {
+          return res.status(400).json({ message: "No file uploaded" });
+        }
+
+        const file = req.files.file; // Access the first element of the UploadedFile array
+
+        // Create a readable stream from the file buffer
+        const fileStream = new Readable();
+        if (Array.isArray(file)) {
+          // Handle multiple files
+          file.forEach((singleFile) => {
+            fileStream.push(singleFile.data);
+          });
+        } else {
+          // Handle a single file
+          fileStream.push(file.data);
+        }
+        fileStream.push(null);
+
+        console.log("fileStream : ", fileStream);
+
+        const uploadStream: GridFSBucketWriteStream =
+          gridfsBucket.openUploadStream(
+            Array.isArray(req.files.file)
+              ? req.files.file[0].name.toString()
+              : req.files.file.name.toString()
+          );
+
+        fileStream.pipe(uploadStream);
+        uploadStream.on("error", function (error) {
+          console.error("Error uploading file: ", error);
+          res.status(500).send("Error uploading file");
+        });
+
+        uploadStream.on("finish", async () => {
+          const fileId = uploadStream.id;
+          const updatedStudent = await collection.students?.findOneAndUpdate(
+            { _id: new ObjectId(decodedToken.id) },
+            {
+              $pull: {
+                pending_assignment: {
+                  _id: new ObjectId(assignment_id),
+                },
               },
             },
-          },
-          { returnDocument: "after" }
-        );
-        const teacherId = deletedAssignment.teacher_id;
-        const teacher = await collection.teachers?.findOneAndUpdate(
-          {
-            _id: new ObjectId(teacherId),
-            "assignments._id": new ObjectId(assignment_id),
-          },
-          {
-            $addToSet: {
-              "assignments.$.responses": {
-                student_id: decodedToken.id,
-                data: data,
-                submission_date: new Date(),
+            { returnDocument: "after" }
+          );
+
+          const submittedAssignment =
+            await collection.students?.findOneAndUpdate(
+              { _id: new ObjectId(decodedToken.id) },
+              {
+                $addToSet: {
+                  submitted_assignment: {
+                    ...deletedAssignment,
+                    data,
+                    file_id: fileId, // Use the stored file ID
+                    submission_date: new Date(),
+                  },
+                },
+              },
+              { returnDocument: "after" }
+            );
+
+          const teacherId = deletedAssignment.teacher_id;
+          const teacher = await collection.teachers?.findOneAndUpdate(
+            {
+              _id: new ObjectId(teacherId),
+              "assignments._id": new ObjectId(assignment_id),
+            },
+            {
+              $addToSet: {
+                "assignments.$.responses": {
+                  student_id: decodedToken.id,
+                  data,
+                  file_id: fileId, // Use the stored file ID
+                  submission_date: new Date(),
+                },
               },
             },
-          },
-          { returnDocument: "after" }
-        );
-        return res.status(200).json({
-          message: "Assignment deleted successfully and added to submitted",
-          deletedAssignment,
+            { returnDocument: "after" }
+          );
+
+          return res.status(200).json({
+            message: "Assignment deleted successfully and added to submitted",
+            deletedAssignment,
+          });
         });
       } else {
         res.status(404).json({ message: "Assignment not found" });
       }
     } else {
-      res.status(404).json({ message: "pls log in" });
+      res.status(404).json({ message: "Please log in" });
     }
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Could not submit assignment" });
   }
 };
@@ -281,7 +330,10 @@ const submitAssignment = async (req: Request, res: Response) => {
 const submitRedoAssignment = async (req: Request, res: Response) => {
   try {
     const { assignment_id, data } = req.body;
+    console.log("assignment_id : ", assignment_id);
+    console.log("file", req.files.file);
     const studentInfo = req.cookies["userInfo"];
+    console.log("studentInfo : ", studentInfo);
     if (studentInfo) {
       const decodedToken = await Jwt.verify(
         studentInfo,
@@ -290,67 +342,108 @@ const submitRedoAssignment = async (req: Request, res: Response) => {
       const student = await collection.students?.findOne({
         _id: new ObjectId(decodedToken.id),
       });
-      console.log("student : ", student);
       if (student) {
         const deletedAssignment = student.redo_assignment.find((assignment) => {
           return assignment._id.toString() === assignment_id.toString();
         });
-        console.log("deletedAssignment : ", deletedAssignment);
-        const updatedStudent = await collection.students?.findOneAndUpdate(
-          { _id: new ObjectId(decodedToken.id) },
-          {
-            $pull: {
-              redo_assignment: { _id: new ObjectId(assignment_id) },
-            },
-          },
-          { returnDocument: "after" }
-        );
-        const submittedAssignment = await collection.students?.findOneAndUpdate(
-          { _id: new ObjectId(decodedToken.id) },
-          {
-            $addToSet: {
-              submitted_assignment: {
-                _id: new ObjectId(assignment_id),
-                assignment_name: deletedAssignment.assignment_name,
-                description: deletedAssignment.description,
-                teacher_id: deletedAssignment.teacher_id,
-                assigned_date: deletedAssignment.assigned_date,
-                due_date: deletedAssignment.due_date,
-                data,
-                submission_date: new Date(),
+
+        // Check if a file was uploaded
+        if (!req.files || !req.files.file) {
+          return res.status(400).json({ message: "No file uploaded" });
+        }
+
+        const file = req.files.file; // Access the first element of the UploadedFile array
+
+        // Create a readable stream from the file buffer
+        const fileStream = new Readable();
+        if (Array.isArray(file)) {
+          // Handle multiple files
+          file.forEach((singleFile) => {
+            fileStream.push(singleFile.data);
+          });
+        } else {
+          // Handle a single file
+          fileStream.push(file.data);
+        }
+        fileStream.push(null);
+
+        console.log("fileStream : ", fileStream);
+
+        const uploadStream: GridFSBucketWriteStream =
+          gridfsBucket.openUploadStream(
+            Array.isArray(req.files.file)
+              ? req.files.file[0].name.toString()
+              : req.files.file.name.toString()
+          );
+
+        fileStream.pipe(uploadStream);
+        uploadStream.on("error", function (error) {
+          console.error("Error uploading file: ", error);
+          res.status(500).send("Error uploading file");
+        });
+
+        uploadStream.on("finish", async () => {
+          const fileId = uploadStream.id;
+          const updatedStudent = await collection.students?.findOneAndUpdate(
+            { _id: new ObjectId(decodedToken.id) },
+            {
+              $pull: {
+                redo_assignment: {
+                  _id: new ObjectId(assignment_id),
+                },
               },
             },
-          },
-          { returnDocument: "after" }
-        );
-        const teacherId = deletedAssignment.teacher_id;
-        const teacher = await collection.teachers?.findOneAndUpdate(
-          {
-            _id: new ObjectId(teacherId),
-            "assignments._id": new ObjectId(assignment_id),
-          },
-          {
-            $addToSet: {
-              "assignments.$.responses": {
-                student_id: decodedToken.id,
-                data: data,
-                submission_date: new Date(),
+            { returnDocument: "after" }
+          );
+
+          const submittedAssignment =
+            await collection.students?.findOneAndUpdate(
+              { _id: new ObjectId(decodedToken.id) },
+              {
+                $addToSet: {
+                  submitted_assignment: {
+                    ...deletedAssignment,
+                    data,
+                    file_id: fileId, // Use the stored file ID
+                    submission_date: new Date(),
+                  },
+                },
+              },
+              { returnDocument: "after" }
+            );
+
+          const teacherId = deletedAssignment.teacher_id;
+          const teacher = await collection.teachers?.findOneAndUpdate(
+            {
+              _id: new ObjectId(teacherId),
+              "assignments._id": new ObjectId(assignment_id),
+            },
+            {
+              $addToSet: {
+                "assignments.$.responses": {
+                  student_id: decodedToken.id,
+                  data,
+                  file_id: fileId, // Use the stored file ID
+                  submission_date: new Date(),
+                },
               },
             },
-          },
-          { returnDocument: "after" }
-        );
-        return res.status(200).json({
-          message: "Assignment deleted successfully and added to submitted",
-          deletedAssignment,
+            { returnDocument: "after" }
+          );
+
+          return res.status(200).json({
+            message: "Assignment deleted successfully and added to submitted",
+            deletedAssignment,
+          });
         });
       } else {
         res.status(404).json({ message: "Assignment not found" });
       }
     } else {
-      res.status(404).json({ message: "pls log in" });
+      res.status(404).json({ message: "Please log in" });
     }
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Could not submit assignment" });
   }
 };

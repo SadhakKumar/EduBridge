@@ -17,6 +17,7 @@ export type submittedAssignment = {
   assigned_date: Date;
   due_date: Date;
   data: string;
+  file_id?: ObjectId;
   submission_date: Date;
 };
 
@@ -27,6 +28,7 @@ export type correctedAssignment = {
   teacher_id: string;
   due_date: string;
   data: string;
+  file_id?: ObjectId;
   submission_date: Date;
   correction_date: Date;
   marks: number;

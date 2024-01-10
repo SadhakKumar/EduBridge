@@ -188,6 +188,7 @@ const checkAssignment = async (req: Request, res: Response) => {
             "assignments.$.correted": {
               student_id: student_id,
               data: pulledResponse.data,
+              file_id: pulledResponse.file_id,
               marks: marks,
               remark: review,
               correction_date: new Date(),
@@ -210,6 +211,7 @@ const checkAssignment = async (req: Request, res: Response) => {
                 teacher_id: decodedToken.id,
                 due_date: matchedAssignment.due_date,
                 data: pulledResponse.data,
+                file_id: pulledResponse.file_id,
                 submission_date: pulledResponse.submission_date,
                 correction_date: new Date(),
                 marks: marks,
