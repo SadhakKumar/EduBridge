@@ -1,4 +1,6 @@
 import { MongoClient, Db, Collection } from "mongodb";
+import gridfs from "gridfs-stream";
+import { Readable } from "stream";
 import dotenv from "dotenv";
 
 import { student } from "../models/student";
@@ -9,6 +11,7 @@ dotenv.config();
 export const collection: {
   students?: Collection<student>;
   teachers?: Collection<teacher>;
+  gridfs?: gridfs.Grid;
 } = {};
 
 export async function connectToDatabase() {
@@ -25,5 +28,6 @@ export async function connectToDatabase() {
 
   collection.students = db.collection<student>("students");
   collection.teachers = db.collection<teacher>("teachers");
+  collection.gridfs = gridfs(db, MongoClient);
   console.log("Connected to database");
 }

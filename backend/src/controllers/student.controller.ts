@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { student } from "../models/student";
 import { studentAssignment } from "../models/assignment";
 import { collection } from "../service/database.service";
+import { Readable } from "stream";
 import Jwt from "jsonwebtoken";
 import bycrypt from "bcrypt";
 import { ObjectId } from "mongodb";
