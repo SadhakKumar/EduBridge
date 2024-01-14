@@ -7,7 +7,7 @@ const DisplayPDF = ({ fileId }) => {
   useEffect(() => {
     const fetchPDF = async () => {
       try {
-        const response = await axios.get(`http://localhost:3500/files/${fileId}`, {
+        const response = await axios.get(`/files/${fileId}`, {
           responseType: 'blob',
           withCredentials: true,
         });

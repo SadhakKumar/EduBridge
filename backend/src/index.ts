@@ -5,7 +5,13 @@ import fileUpload from "express-fileupload";
 import cors from "cors";
 
 const app = express();
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+
+const allowedOrigins = [
+  "http://localhost:3000",
+  `${process.env.FRONTEND_URL}`,
+  // Add more origin URLs as needed
+];
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(cookieParser());
 
 app.use(express.json());
@@ -23,6 +29,7 @@ app.use("/files", fileRouter);
 connectToDatabase()
   .then(() => {
     const PORT = process.env.PORT || 3000;
+    console.log(process.env.FRONTEND_URL);
     app.listen(PORT, () => {
       console.log(`Express is listening at http://localhost:${PORT}`);
     });
